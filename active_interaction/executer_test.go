@@ -48,7 +48,7 @@ func (s SubjectBeforeValidate) Run() int {
 	return s.A
 }
 
-func TestBeforeValidate(t *testing.T) {
+func TestBeforeBeforeValidate(t *testing.T) {
 	value, _ := active_interaction.Execute[int](&SubjectBeforeValidate{A: 2})
 	assert.Equal(t, *value, 4)
 }
