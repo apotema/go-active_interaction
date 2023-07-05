@@ -1,12 +1,11 @@
 package active_interaction
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/go-playground/validator/v10"
 )
-
-type BeforeValidate interface {
-	BeforeValidate() []func()
-}
 
 var validate *validator.Validate = validator.New()
 
@@ -16,11 +15,19 @@ func Execute[T any](interaction ActiveInteraction[T]) (*T, error) {
 		return nil, err
 	}
 
-	if bf, ok := interaction.(BeforeValidate); ok {
-		for _, beforeValidate := range bf.BeforeValidate() {
+	var i interface{} = interaction
+
+	if _, ok := i.(BeforeValidate); ok {
+		// fmt.Println("before validate")
+		values := reflect.ValueOf(interaction).MethodByName("BeforeValidate").Call(nil)
+		// fmt.Println("before validate")
+		for _, beforeValidate := range values {
 			beforeValidate()
 		}
+	} else {
+		fmt.Println("no before validate")
 	}
+
 	val := interaction.Run()
 	return &val, nil
 }

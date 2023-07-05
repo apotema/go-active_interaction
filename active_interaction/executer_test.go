@@ -1,6 +1,7 @@
 package active_interaction_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/apotema/go-active_interaction/active_interaction"
@@ -37,7 +38,8 @@ type SubjectBeforeValidate struct {
 	A int
 }
 
-func (s *SubjectBeforeValidate) BeforeValidate() []func() {
+func (s SubjectBeforeValidate) BeforeValidate() []func() {
+	fmt.Println("called by name")
 	var setA = func() {
 		s.A = 4
 	}
@@ -49,6 +51,6 @@ func (s SubjectBeforeValidate) Run() int {
 }
 
 func TestBeforeBeforeValidate(t *testing.T) {
-	value, _ := active_interaction.Execute[int](&SubjectBeforeValidate{A: 2})
-	assert.Equal(t, *value, 4)
+	value, _ := active_interaction.Execute[int](SubjectBeforeValidate{A: 2})
+	assert.Equal(t, 4, *value)
 }
