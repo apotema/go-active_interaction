@@ -1,10 +1,10 @@
 package active_interaction_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/apotema/go-active_interaction/active_interaction"
+	. "github.com/apotema/go-active_interaction/active_interaction"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,22 +35,15 @@ func Test_Validate_invalid(t *testing.T) {
 }
 
 type SubjectBeforeValidate struct {
-	A int
-}
-
-func (s SubjectBeforeValidate) BeforeValidate() []func() {
-	fmt.Println("called by name")
-	var setA = func() {
-		s.A = 4
-	}
-	return []func(){setA}
+	A             int
+	ValidateHooks `before:"SetA" after:"SetB"`
 }
 
 func (s SubjectBeforeValidate) Run() int {
 	return s.A
 }
 
-func TestBeforeBeforeValidate(t *testing.T) {
-	value, _ := active_interaction.Execute[int](SubjectBeforeValidate{A: 2})
+func TestBeforeBeforeValidateHook(t *testing.T) {
+	value, _ := active_interaction.Execute[int](&SubjectBeforeValidate{A: 2})
 	assert.Equal(t, 4, *value)
 }
