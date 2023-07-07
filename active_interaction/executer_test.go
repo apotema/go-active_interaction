@@ -18,7 +18,7 @@ func (s Subject) Run() int {
 
 func TestReturnValue(t *testing.T) {
 	value, _ := active_interaction.Execute[int](Subject{A: 2})
-	assert.Equal(t, *value, 1)
+	assert.Equal(t, value, 1)
 }
 
 type SubjectValidate struct {
@@ -49,5 +49,5 @@ func (s SubjectBeforeValidate) Run() int {
 
 func TestBeforeBeforeValidateHook(t *testing.T) {
 	value, _ := Execute[int](&SubjectBeforeValidate{A: 2})
-	assert.Equal(t, 4, *value)
+	assert.Equal(t, 4, value)
 }

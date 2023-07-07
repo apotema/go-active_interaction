@@ -45,14 +45,14 @@ func CallMethod(i interface{}, methodName string) interface{} {
 	return ""
 }
 
-func Execute[T any](interaction ActiveInteraction[T]) (*T, error) {
-	x := interaction
+func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
 	err := validate.Struct(interaction)
 	if err != nil {
-		return nil, err
+		var result T
+		return result, err
 	}
 
-	CallMethod(&x, "SetA")
+	CallMethod(interaction, "SetA")
 
 	// var i interface{} = interaction
 
@@ -72,6 +72,6 @@ func Execute[T any](interaction ActiveInteraction[T]) (*T, error) {
 	// 	}
 	// }
 
-	val := x.Run()
-	return &val, nil
+	val := interaction.Run()
+	return val, nil
 }
