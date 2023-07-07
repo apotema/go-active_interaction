@@ -36,7 +36,11 @@ func Test_Validate_invalid(t *testing.T) {
 
 type SubjectBeforeValidate struct {
 	A             int
-	ValidateHooks `before:"SetA" after:"SetB"`
+	ValidateHooks `before:"SetA"`
+}
+
+func (s *SubjectBeforeValidate) SetA() {
+	s.A = 4
 }
 
 func (s SubjectBeforeValidate) Run() int {
@@ -44,6 +48,6 @@ func (s SubjectBeforeValidate) Run() int {
 }
 
 func TestBeforeBeforeValidateHook(t *testing.T) {
-	value, _ := active_interaction.Execute[int](&SubjectBeforeValidate{A: 2})
+	value, _ := Execute[int](&SubjectBeforeValidate{A: 2})
 	assert.Equal(t, 4, *value)
 }

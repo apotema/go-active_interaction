@@ -5,10 +5,4 @@ type ActiveInteraction[T any] interface {
 }
 
 type ValidateHooks struct {
-	BeforeValidate func()
-	Functions      []func()
-}
-
-func (BV *ValidateHooks) Execute() {
-
 }
