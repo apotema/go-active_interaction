@@ -1,6 +1,7 @@
 package active_interaction
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/go-playground/validator/v10"
@@ -52,25 +53,22 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
 		return result, err
 	}
 
-	CallMethod(interaction, "SetA")
+	var ptr reflect.Value
+	var value reflect.Value
 
-	// var i interface{} = interaction
+	ptr = reflect.New(reflect.TypeOf(interaction))
+	temp := ptr.Elem()
+	value = reflect.ValueOf(interaction)
+	temp.Set(value)
 
-	// t := reflect.TypeOf(i)
-	// fmt.Println(t.Name())
-	// fmt.Println("went here")
-	// t.Elem().MethodByName("SetA")
-	// reflect.ValueOf(t.Elem()).MethodByName("SetA").Call([]reflect.Value{})
-	// for i := 0; i < t.NumField(); i++ {
-	// 	f := t.Field(i)
-	// 	if value, ok := f.Tag.Lookup("before"); ok {
-	// 		fmt.Println("Tag found")
-	// 		fmt.Println(value)
-	// 		reflect.ValueOf(i).MethodByName("SetA").Call([]reflect.Value{})
-	// 	} else {
-	// 		fmt.Println("Tag not found")
-	// 	}
-	// }
+	t := reflect.TypeOf(interaction)
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		if value, ok := f.Tag.Lookup("before"); ok {
+			fmt.Println(value)
+			CallMethod(interaction, value)
+		}
+	}
 
 	val := interaction.Run()
 	return val, nil
