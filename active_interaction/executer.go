@@ -1,7 +1,6 @@
 package active_interaction
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/go-playground/validator/v10"
@@ -61,11 +60,16 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
 	value = reflect.ValueOf(interaction)
 	temp.Set(value)
 
-	t := reflect.TypeOf(interaction)
+	var t reflect.Type
+	if reflect.TypeOf(interaction).Kind() == reflect.Ptr {
+		t = reflect.TypeOf(interaction).Elem()
+	} else {
+		t = reflect.TypeOf(interaction)
+	}
+
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 		if value, ok := f.Tag.Lookup("before"); ok {
-			fmt.Println(value)
 			CallMethod(interaction, value)
 		}
 	}

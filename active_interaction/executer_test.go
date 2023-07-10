@@ -48,6 +48,6 @@ func (s SubjectBeforeValidate) Run() int {
 }
 
 func TestBeforeBeforeValidateHook(t *testing.T) {
-	value, _ := Execute[int](SubjectBeforeValidate{A: 2})
+	value, _ := Execute[int](&SubjectBeforeValidate{A: 2})
 	assert.Equal(t, 4, value)
 }
