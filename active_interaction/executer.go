@@ -2,6 +2,7 @@ package active_interaction
 
 import (
 	"reflect"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -70,7 +71,9 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 		if value, ok := f.Tag.Lookup("before"); ok {
-			CallMethod(interaction, value)
+			for _, s := range strings.Split(value, "|") {
+				CallMethod(interaction, s)
+			}
 		}
 	}
 

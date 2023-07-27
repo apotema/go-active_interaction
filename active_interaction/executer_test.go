@@ -47,7 +47,29 @@ func (s SubjectBeforeValidate) Run() int {
 	return s.A
 }
 
-func TestBeforeBeforeValidateHook(t *testing.T) {
+func TestBeforeValidateHook(t *testing.T) {
 	value, _ := Execute[int](&SubjectBeforeValidate{A: 2})
 	assert.Equal(t, 4, value)
+}
+
+type SubjectMultipleBeforeValidate struct {
+	A             int
+	ValidateHooks `before:"SetA|SetB"`
+}
+
+func (s *SubjectMultipleBeforeValidate) SetA() {
+	s.A += 4
+}
+
+func (s *SubjectMultipleBeforeValidate) SetB() {
+	s.A += 4
+}
+
+func (s SubjectMultipleBeforeValidate) Run() int {
+	return s.A
+}
+
+func TestMultipleBeforeValidateHooks(t *testing.T) {
+	value, _ := Execute[int](&SubjectMultipleBeforeValidate{A: 2})
+	assert.Equal(t, 10, value)
 }
