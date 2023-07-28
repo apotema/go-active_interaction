@@ -3,7 +3,6 @@ package active_interaction_test
 import (
 	"testing"
 
-	"github.com/apotema/go-active_interaction/active_interaction"
 	. "github.com/apotema/go-active_interaction/active_interaction"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +16,7 @@ func (s Subject) Run() int {
 }
 
 func TestReturnValue(t *testing.T) {
-	value, _ := active_interaction.Execute[int](Subject{A: 2})
+	value, _ := Execute[int](Subject{A: 2})
 	assert.Equal(t, value, 1)
 }
 
@@ -30,7 +29,7 @@ func (s SubjectValidate) Run() int {
 }
 
 func Test_Validate_invalid(t *testing.T) {
-	_, error := active_interaction.Execute[int](SubjectValidate{A: 2})
+	_, error := Execute[int](SubjectValidate{A: 2})
 	assert.Error(t, error)
 }
 
