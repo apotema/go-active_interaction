@@ -5,6 +5,7 @@ import (
 
 	. "github.com/apotema/go-active_interaction/active_interaction"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 type Subject struct {
@@ -149,12 +150,23 @@ func TestMultipleBeforeExecuteHook(t *testing.T) {
 	assert.Equal(t, 10, value)
 }
 
+type MyMockedObject struct {
+	mock.Mock
+}
+
+func (m *MyMockedObject) DoSomething(number int) (bool, error) {
+	args := m.Called(number)
+	return args.Bool(0), args.Error(1)
+}
+
 type SubjectAfterExecute struct {
 	A            int
 	ExecuteHooks `after:"SetA"`
+	mock         MyMockedObject
 }
 
 func (s *SubjectAfterExecute) SetA() {
+	s.mock.DoSomething(10)
 	s.A += 4
 }
 
@@ -162,7 +174,12 @@ func (s SubjectAfterExecute) Run() int {
 	return s.A
 }
 
-func TestAfterExecuteHook(t *testing.T) {
-	value, _ := Execute[int](&SubjectAfterExecute{A: 2})
+func TestAfterExecuteHookIsCalled(t *testing.T) {
+
+	testObj := new(MyMockedObject)
+	testObj.On("DoSomething", mock.Anything).Return(true, nil)
+
+	value, _ := Execute[int](&SubjectAfterExecute{A: 2, mock: *testObj})
+	testObj.AssertExpectations(t)
 	assert.Equal(t, 2, value)
 }
