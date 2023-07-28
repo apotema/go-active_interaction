@@ -62,12 +62,10 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
 		t = reflect.TypeOf(interaction)
 	}
 
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		if value, ok := f.Tag.Lookup("before"); ok {
-			for _, s := range strings.Split(value, "|") {
-				CallMethod(interaction, s)
-			}
+	f, _ := t.FieldByName("ValidateHooks")
+	if value, ok := f.Tag.Lookup("before"); ok {
+		for _, s := range strings.Split(value, "|") {
+			CallMethod(interaction, s)
 		}
 	}
 
@@ -77,15 +75,27 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
 		return result, err
 	}
 
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		if value, ok := f.Tag.Lookup("after"); ok {
-			for _, s := range strings.Split(value, "|") {
-				CallMethod(interaction, s)
-			}
+	if value, ok := f.Tag.Lookup("after"); ok {
+		for _, s := range strings.Split(value, "|") {
+			CallMethod(interaction, s)
+		}
+	}
+
+	beforeExecuteHook, _ := t.FieldByName("ExecuteHooks")
+	if value, ok := beforeExecuteHook.Tag.Lookup("before"); ok {
+		for _, s := range strings.Split(value, "|") {
+			CallMethod(interaction, s)
 		}
 	}
 
 	val := interaction.Run()
+
+	afterExecuteHook, _ := t.FieldByName("ExecuteHooks")
+	if value, ok := afterExecuteHook.Tag.Lookup("after"); ok {
+		for _, s := range strings.Split(value, "|") {
+			CallMethod(interaction, s)
+		}
+	}
+
 	return val, nil
 }

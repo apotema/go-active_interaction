@@ -104,7 +104,65 @@ func (s SubjectAfterValidateWithValidation) Run() int {
 	return s.A
 }
 
-func AfterValidateHookExecuteAfterValidation(t *testing.T) {
+func TestAfterValidateHookExecuteAfterValidation(t *testing.T) {
 	_, error := Execute[int](&SubjectAfterValidateWithValidation{A: 2})
 	assert.Error(t, error)
+}
+
+type SubjectBeforeExecute struct {
+	A            int
+	ExecuteHooks `before:"SetA"`
+}
+
+func (s *SubjectBeforeExecute) SetA() {
+	s.A += 4
+}
+
+func (s SubjectBeforeExecute) Run() int {
+	return s.A
+}
+
+func TestBeforeExecuteHook(t *testing.T) {
+	value, _ := Execute[int](&SubjectBeforeExecute{A: 2})
+	assert.Equal(t, 6, value)
+}
+
+type SubjectMultipleBeforeExecutes struct {
+	A            int
+	ExecuteHooks `before:"SetA|SetB"`
+}
+
+func (s *SubjectMultipleBeforeExecutes) SetA() {
+	s.A += 4
+}
+
+func (s *SubjectMultipleBeforeExecutes) SetB() {
+	s.A += 4
+}
+
+func (s SubjectMultipleBeforeExecutes) Run() int {
+	return s.A
+}
+
+func TestMultipleBeforeExecuteHook(t *testing.T) {
+	value, _ := Execute[int](&SubjectMultipleBeforeExecutes{A: 2})
+	assert.Equal(t, 10, value)
+}
+
+type SubjectAfterExecute struct {
+	A            int
+	ExecuteHooks `after:"SetA"`
+}
+
+func (s *SubjectAfterExecute) SetA() {
+	s.A += 4
+}
+
+func (s SubjectAfterExecute) Run() int {
+	return s.A
+}
+
+func TestAfterExecuteHook(t *testing.T) {
+	value, _ := Execute[int](&SubjectAfterExecute{A: 2})
+	assert.Equal(t, 2, value)
 }

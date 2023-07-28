@@ -6,3 +6,6 @@ type ActiveInteraction[T any] interface {
 
 type ValidateHooks struct {
 }
+
+type ExecuteHooks struct {
+}
