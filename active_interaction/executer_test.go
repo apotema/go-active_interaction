@@ -182,3 +182,44 @@ func TestAfterExecuteHookIsCalled(t *testing.T) {
 	testObj.AssertExpectations(t)
 	assert.Equal(t, 2, value)
 }
+
+type SubjectComposedInteraction struct {
+}
+
+func (s SubjectComposedInteraction) Run() int {
+	val, _ := Compose[int](AnotherInteraction{})
+	return val
+}
+
+type AnotherInteraction struct {
+}
+
+func (s AnotherInteraction) Run() int {
+	return 4
+}
+
+func TestComposedExecute(t *testing.T) {
+	value, _ := Execute[int](SubjectComposedInteraction{})
+	assert.Equal(t, 4, value)
+}
+
+type SubjectComposedInteractionWithError struct {
+}
+
+func (s SubjectComposedInteractionWithError) Run() int {
+	val, _ := Compose[int](AnotherInteractionWithError{})
+	return val
+}
+
+type AnotherInteractionWithError struct {
+	A int `validate:"gte=4"`
+}
+
+func (s AnotherInteractionWithError) Run() int {
+	return 4
+}
+
+func TestComposedExecuteWithError(t *testing.T) {
+	_, error := Execute[int](SubjectComposedInteractionWithError{})
+	assert.Error(t, error)
+}

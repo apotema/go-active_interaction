@@ -9,6 +9,15 @@ import (
 
 var validate *validator.Validate = validator.New()
 
+type InteractionError struct {
+	Field   string
+	Message string
+}
+
+func (m *InteractionError) Error() string {
+	return "field: error"
+}
+
 func CallMethod(i interface{}, methodName string) interface{} {
 	var ptr reflect.Value
 	var value reflect.Value
@@ -46,7 +55,12 @@ func CallMethod(i interface{}, methodName string) interface{} {
 	return ""
 }
 
-func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
+func Compose[T any](interaction ActiveInteraction[T]) (T, *InteractionError) {
+	result, error := Execute[T](interaction)
+	return result, error
+}
+
+func Execute[T any](interaction ActiveInteraction[T]) (T, *InteractionError) {
 	var ptr reflect.Value
 	var value reflect.Value
 
@@ -72,7 +86,7 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
 	err := validate.Struct(interaction)
 	if err != nil {
 		var result T
-		return result, err
+		return result, nil
 	}
 
 	if value, ok := f.Tag.Lookup("after"); ok {
