@@ -47,12 +47,6 @@ func CallMethod(i interface{}, methodName string) interface{} {
 }
 
 func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
-	err := validate.Struct(interaction)
-	if err != nil {
-		var result T
-		return result, err
-	}
-
 	var ptr reflect.Value
 	var value reflect.Value
 
@@ -71,6 +65,21 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, error) {
 	for i := 0; i < t.NumField(); i++ {
 		f := t.Field(i)
 		if value, ok := f.Tag.Lookup("before"); ok {
+			for _, s := range strings.Split(value, "|") {
+				CallMethod(interaction, s)
+			}
+		}
+	}
+
+	err := validate.Struct(interaction)
+	if err != nil {
+		var result T
+		return result, err
+	}
+
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		if value, ok := f.Tag.Lookup("after"); ok {
 			for _, s := range strings.Split(value, "|") {
 				CallMethod(interaction, s)
 			}
