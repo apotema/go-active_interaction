@@ -162,7 +162,7 @@ func (m *MyMockedObject) DoSomething(number int) (bool, error) {
 type SubjectAfterExecute struct {
 	A            int
 	ExecuteHooks `after:"SetA"`
-	mock         MyMockedObject
+	mock         *MyMockedObject
 }
 
 func (s *SubjectAfterExecute) SetA() {
@@ -178,7 +178,7 @@ func TestAfterExecuteHookIsCalled(t *testing.T) {
 	testObj := new(MyMockedObject)
 	testObj.On("DoSomething", mock.Anything).Return(true, nil)
 
-	value, _ := Execute[int](&SubjectAfterExecute{A: 2, mock: *testObj})
+	value, _ := Execute[int](&SubjectAfterExecute{A: 2, mock: testObj})
 	testObj.AssertExpectations(t)
 	assert.Equal(t, 2, value)
 }
