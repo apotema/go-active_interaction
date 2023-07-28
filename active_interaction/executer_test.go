@@ -170,12 +170,11 @@ func (s *SubjectAfterExecute) SetA() {
 	s.A += 4
 }
 
-func (s SubjectAfterExecute) Run() int {
+func (s *SubjectAfterExecute) Run() int {
 	return s.A
 }
 
 func TestAfterExecuteHookIsCalled(t *testing.T) {
-
 	testObj := new(MyMockedObject)
 	testObj.On("DoSomething", mock.Anything).Return(true, nil)
 
