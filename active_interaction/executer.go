@@ -9,15 +9,6 @@ import (
 
 var validate *validator.Validate = validator.New()
 
-type InteractionError struct {
-	Field   string
-	Message string
-}
-
-func (m *InteractionError) Error() string {
-	return "field: error"
-}
-
 func CallMethod(i interface{}, methodName string) interface{} {
 	var ptr reflect.Value
 	var value reflect.Value
