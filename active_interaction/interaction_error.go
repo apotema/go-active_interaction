@@ -9,7 +9,7 @@ type InteractionError struct {
 	errors map[string][]string
 }
 
-func (m *InteractionError) Error() string {
+func (m InteractionError) Error() string {
 	var fields []string = []string{}
 	for key, element := range m.errors {
 		messages := strings.Join(element, "\",\"")
@@ -23,4 +23,8 @@ func (m *InteractionError) AddError(field string, message string) {
 		m.errors = map[string][]string{}
 	}
 	m.errors[field] = append(m.errors[field], message)
+}
+
+func (m InteractionError) ErrorMap() map[string][]string {
+	return m.errors
 }

@@ -77,7 +77,7 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, *InteractionError) {
 	err := validate.Struct(interaction)
 	if err != nil {
 		var result T
-		return result, nil
+		return result, &InteractionError{}
 	}
 
 	if value, ok := f.Tag.Lookup("after"); ok {
