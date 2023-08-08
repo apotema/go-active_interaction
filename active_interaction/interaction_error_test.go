@@ -2,6 +2,7 @@ package active_interaction_test
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/apotema/go-active_interaction/active_interaction"
@@ -45,4 +46,21 @@ Key: 'SubjectValidate.B' Error:Field validation for 'B' failed on the 'gte' tag`
 	err := errors.New(errorMessage)
 	interaction_error.AddValidatorError(err)
 	assert.Equal(t, interaction_error.Error(), "\"A\": [\"Field validation for 'A' failed on the 'gte' tag\"], \"B\": [\"Field validation for 'B' failed on the 'gte' tag\"]")
+}
+
+func TestAddValidatorErrorHash(t *testing.T) {
+	errStr := "'object.field1' Error:This is field1 error\n" +
+		"'object.field2' Error:This is field2 error"
+	err := fmt.Errorf(errStr)
+
+	m := &active_interaction.InteractionError{}
+	m = m.AddValidatorError(err)
+
+	expectedErrors := map[string][]string{
+		"field1": {"This is field1 error"},
+		"field2": {"This is field2 error"},
+	}
+
+	actualErrors := m.ErrorMap()
+	assert.Equal(t, expectedErrors, actualErrors)
 }
