@@ -23,6 +23,7 @@ func TestReturnValue(t *testing.T) {
 
 type SubjectValidate struct {
 	A int `validate:"gte=4"`
+	B int `validate:"gte=4"`
 }
 
 func (s SubjectValidate) Run() int {
@@ -32,6 +33,15 @@ func (s SubjectValidate) Run() int {
 func Test_Validate_invalid(t *testing.T) {
 	_, error := Execute[int](SubjectValidate{A: 2})
 	assert.Error(t, error)
+}
+
+func Test_Validate_invalid_erro_detail(t *testing.T) {
+	_, error := Execute[int](SubjectValidate{A: 2})
+	assert.Equal(
+		t,
+		"Field validation for 'A' failed on the 'gte' tag",
+		error.ErrorMap()["A"][0],
+	)
 }
 
 type SubjectBeforeValidate struct {
