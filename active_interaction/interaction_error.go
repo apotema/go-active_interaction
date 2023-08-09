@@ -26,7 +26,7 @@ func (m *InteractionError) AddError(field string, message string) {
 	m.errors[field] = append(m.errors[field], message)
 }
 
-func (m *InteractionError) AddValidatorError(errors error) *InteractionError {
+func (m *InteractionError) AddValidatorError(errors error) InteractionError {
 	fieldRegex := regexp.MustCompile(`[^']*\.([^']*)'`)
 	descriptionRegex := regexp.MustCompile(`Error:(.*)`)
 
@@ -54,7 +54,7 @@ func (m *InteractionError) AddValidatorError(errors error) *InteractionError {
 		m.AddError(field, description)
 	}
 
-	return m
+	return *m
 }
 
 func (m InteractionError) ErrorMap() map[string][]string {

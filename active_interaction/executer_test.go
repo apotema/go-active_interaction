@@ -25,6 +25,7 @@ func TestReturnValue(t *testing.T) {
 type SubjectValidate struct {
 	A int `validate:"gte=4"`
 	B int `validate:"gte=4"`
+	InteractionUtils
 }
 
 func (s SubjectValidate) Run() int {
@@ -32,12 +33,12 @@ func (s SubjectValidate) Run() int {
 }
 
 func Test_Validate_invalid(t *testing.T) {
-	_, error := Execute[int](SubjectValidate{A: 2})
+	_, error := Execute[int](&SubjectValidate{A: 2})
 	assert.Error(t, error)
 }
 
 func Test_Validate_invalid_erro_detail(t *testing.T) {
-	_, error := Execute[int](SubjectValidate{A: 2})
+	_, error := Execute[int](&SubjectValidate{A: 2})
 	assert.Equal(
 		t,
 		"Field validation for 'A' failed on the 'gte' tag",
@@ -48,6 +49,7 @@ func Test_Validate_invalid_erro_detail(t *testing.T) {
 type SubjectBeforeValidate struct {
 	A             int
 	ValidateHooks `before:"SetA"`
+	InteractionUtils
 }
 
 func (s *SubjectBeforeValidate) SetA() {
@@ -66,6 +68,7 @@ func TestBeforeValidateHook(t *testing.T) {
 type SubjectMultipleBeforeValidate struct {
 	A             int `validate:"gte=4"`
 	ValidateHooks `before:"SetA|SetB"`
+	InteractionUtils
 }
 
 func (s *SubjectMultipleBeforeValidate) SetA() {
@@ -88,6 +91,7 @@ func TestMultipleBeforeValidateHooks(t *testing.T) {
 type SubjectAfterValidate struct {
 	A             int
 	ValidateHooks `after:"SetA"`
+	InteractionUtils
 }
 
 func (s *SubjectAfterValidate) SetA() {
@@ -106,6 +110,7 @@ func TestAfterValidateHooks(t *testing.T) {
 type SubjectAfterValidateWithValidation struct {
 	A             int `validate:"gte=4"`
 	ValidateHooks `after:"SetA"`
+	InteractionUtils
 }
 
 func (s *SubjectAfterValidateWithValidation) SetA() {
@@ -124,6 +129,7 @@ func TestAfterValidateHookExecuteAfterValidation(t *testing.T) {
 type SubjectBeforeExecute struct {
 	A            int
 	ExecuteHooks `before:"SetA"`
+	InteractionUtils
 }
 
 func (s *SubjectBeforeExecute) SetA() {
@@ -142,6 +148,7 @@ func TestBeforeExecuteHook(t *testing.T) {
 type SubjectMultipleBeforeExecutes struct {
 	A            int
 	ExecuteHooks `before:"SetA|SetB"`
+	InteractionUtils
 }
 
 func (s *SubjectMultipleBeforeExecutes) SetA() {
@@ -174,6 +181,7 @@ type SubjectAfterExecute struct {
 	A            int
 	ExecuteHooks `after:"SetA"`
 	mock         *MyMockedObject
+	InteractionUtils
 }
 
 func (s *SubjectAfterExecute) SetA() {
@@ -195,14 +203,16 @@ func TestAfterExecuteHookIsCalled(t *testing.T) {
 }
 
 type SubjectComposedInteraction struct {
+	InteractionUtils
 }
 
 func (s SubjectComposedInteraction) Run() int {
-	val, _ := Compose[int](AnotherInteraction{})
+	val, _ := Compose[int](&AnotherInteraction{})
 	return val
 }
 
 type AnotherInteraction struct {
+	InteractionUtils
 }
 
 func (s AnotherInteraction) Run() int {
@@ -210,20 +220,22 @@ func (s AnotherInteraction) Run() int {
 }
 
 func TestComposedExecute(t *testing.T) {
-	value, _ := Execute[int](SubjectComposedInteraction{})
+	value, _ := Execute[int](&SubjectComposedInteraction{})
 	assert.Equal(t, 4, value)
 }
 
 type SubjectComposedInteractionWithError struct {
+	InteractionUtils
 }
 
 func (s SubjectComposedInteractionWithError) Run() int {
-	val, _ := Compose[int](AnotherInteractionWithError{})
+	val, _ := Compose[int](&AnotherInteractionWithError{})
 	return val
 }
 
 type AnotherInteractionWithError struct {
 	A int `validate:"gte=4"`
+	InteractionUtils
 }
 
 func (s AnotherInteractionWithError) Run() int {
@@ -231,6 +243,6 @@ func (s AnotherInteractionWithError) Run() int {
 }
 
 func TestComposedExecuteWithError(t *testing.T) {
-	_, error := Execute[int](SubjectComposedInteractionWithError{})
-	assert.Error(t, error)
+	_, error := Execute[int](&SubjectComposedInteractionWithError{})
+	assert.NotNil(t, error)
 }

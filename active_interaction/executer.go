@@ -7,8 +7,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var validate *validator.Validate = validator.New()
-
 func CallMethod(i interface{}, methodName string) interface{} {
 	var ptr reflect.Value
 	var value reflect.Value
@@ -46,12 +44,13 @@ func CallMethod(i interface{}, methodName string) interface{} {
 	return ""
 }
 
-func Compose[T any](interaction ActiveInteraction[T]) (T, *InteractionError) {
+func Compose[T any](interaction ActiveInteraction[T]) (T, InteractionError) {
 	result, error := Execute[T](interaction)
 	return result, error
 }
 
-func Execute[T any](interaction ActiveInteraction[T]) (T, *InteractionError) {
+func Execute[T any](interaction ActiveInteraction[T]) (T, InteractionError) {
+	var validate *validator.Validate = validator.New()
 	var ptr reflect.Value
 	var value reflect.Value
 
@@ -77,8 +76,8 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, *InteractionError) {
 	err := validate.Struct(interaction)
 	if err != nil {
 		var result T
-		error := InteractionError{}
-		return result, error.AddValidatorError(err)
+		interactionError := interaction.AddValidatorError(err)
+		return result, interactionError
 	}
 
 	if value, ok := f.Tag.Lookup("after"); ok {
@@ -103,5 +102,5 @@ func Execute[T any](interaction ActiveInteraction[T]) (T, *InteractionError) {
 		}
 	}
 
-	return val, nil
+	return val, interaction.GetError()
 }

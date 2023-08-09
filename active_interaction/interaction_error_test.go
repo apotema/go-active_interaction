@@ -53,7 +53,7 @@ func TestAddValidatorErrorHash(t *testing.T) {
 		"'object.field2' Error:This is field2 error"
 	err := fmt.Errorf(errStr)
 
-	m := &active_interaction.InteractionError{}
+	m := active_interaction.InteractionError{}
 	m = m.AddValidatorError(err)
 
 	expectedErrors := map[string][]string{
