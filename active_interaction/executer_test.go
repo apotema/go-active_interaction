@@ -10,6 +10,7 @@ import (
 
 type Subject struct {
 	A int
+	InteractionUtils
 }
 
 func (s Subject) Run() int {
@@ -17,7 +18,7 @@ func (s Subject) Run() int {
 }
 
 func TestReturnValue(t *testing.T) {
-	value, _ := Execute[int](Subject{A: 2})
+	value, _ := Execute[int](&Subject{A: 2})
 	assert.Equal(t, value, 1)
 }
 
