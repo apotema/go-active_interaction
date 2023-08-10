@@ -4,11 +4,18 @@ type ActiveInteraction[T any] interface {
 	Run() T
 	AddError(field string, value string)
 	AddValidatorError(err error) InteractionError
-	GetError() InteractionError
+	GetError() *InteractionError
+	InitializeError()
 }
 
 type InteractionUtils struct {
 	Error InteractionError
+}
+
+func (m *InteractionUtils) InitializeError() {
+	if !m.Error.HasError() {
+		m.Error = InteractionError{}
+	}
 }
 
 func (m *InteractionUtils) AddValidatorError(err error) InteractionError {
@@ -19,8 +26,8 @@ func (m *InteractionUtils) AddError(field string, value string) {
 	m.Error.AddError(field, value)
 }
 
-func (m InteractionUtils) GetError() InteractionError {
-	return m.Error
+func (m *InteractionUtils) GetError() *InteractionError {
+	return &m.Error
 }
 
 type ValidateHooks struct {

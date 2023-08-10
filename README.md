@@ -23,7 +23,7 @@ Go ActiveInteractation is based on [active_interaction](https://github.com/Aaron
   go get github.com/apotema/go-activeinteraction
 
 ## Basic usage
-
+f
 
 
 ### Validations

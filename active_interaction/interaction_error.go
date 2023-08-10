@@ -26,6 +26,15 @@ func (m *InteractionError) AddError(field string, message string) {
 	m.errors[field] = append(m.errors[field], message)
 }
 
+func (m *InteractionError) Append(other *InteractionError, prefix string) {
+	for k, v := range other.errors {
+		prefixedKey := fmt.Sprintf("%s.%s", prefix, k)
+		for _, msg := range v {
+			m.AddError(prefixedKey, msg)
+		}
+	}
+}
+
 func (m *InteractionError) AddValidatorError(errors error) InteractionError {
 	fieldRegex := regexp.MustCompile(`[^']*\.([^']*)'`)
 	descriptionRegex := regexp.MustCompile(`Error:(.*)`)
@@ -59,4 +68,8 @@ func (m *InteractionError) AddValidatorError(errors error) InteractionError {
 
 func (m InteractionError) ErrorMap() map[string][]string {
 	return m.errors
+}
+
+func (m InteractionError) HasError() bool {
+	return len(m.errors) > 0
 }

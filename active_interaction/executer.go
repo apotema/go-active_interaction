@@ -7,6 +7,73 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+func Execute[T any](interaction ActiveInteraction[T]) (T, *InteractionError) {
+	var validate *validator.Validate = validator.New()
+	var ptr reflect.Value
+	var value reflect.Value
+
+	ptr = reflect.New(reflect.TypeOf(interaction))
+	temp := ptr.Elem()
+	value = reflect.ValueOf(interaction)
+	temp.Set(value)
+
+	var t reflect.Type
+	if reflect.TypeOf(interaction).Kind() == reflect.Ptr {
+		t = reflect.TypeOf(interaction).Elem()
+	} else {
+		t = reflect.TypeOf(interaction)
+	}
+
+	validateHook, _ := t.FieldByName("ValidateHooks")
+	if value, ok := validateHook.Tag.Lookup("before"); ok {
+		for _, s := range strings.Split(value, "|") {
+			CallMethod(interaction, s)
+		}
+	}
+
+	err := validate.Struct(interaction)
+	if err != nil {
+		var result T
+		interactionError := interaction.AddValidatorError(err)
+		return result, &interactionError
+	}
+
+	if value, ok := validateHook.Tag.Lookup("after"); ok {
+		for _, s := range strings.Split(value, "|") {
+			CallMethod(interaction, s)
+		}
+	}
+
+	beforeExecuteHook, _ := t.FieldByName("ExecuteHooks")
+	if value, ok := beforeExecuteHook.Tag.Lookup("before"); ok {
+		for _, s := range strings.Split(value, "|") {
+			CallMethod(interaction, s)
+		}
+	}
+
+	val := interaction.Run()
+
+	afterExecuteHook, _ := t.FieldByName("ExecuteHooks")
+	if value, ok := afterExecuteHook.Tag.Lookup("after"); ok {
+		for _, s := range strings.Split(value, "|") {
+			CallMethod(interaction, s)
+		}
+	}
+
+	return val, interaction.GetError()
+}
+
+func Compose[E any, T any](
+	caller ActiveInteraction[E],
+	interaction ActiveInteraction[T],
+) (T, *InteractionError) {
+	result, errors := Execute[T](interaction)
+	if errors != nil {
+		caller.GetError().Append(errors, reflect.TypeOf(interaction).Elem().Name())
+	}
+	return result, errors
+}
+
 func CallMethod(i interface{}, methodName string) interface{} {
 	var ptr reflect.Value
 	var value reflect.Value
@@ -42,65 +109,4 @@ func CallMethod(i interface{}, methodName string) interface{} {
 
 	// return or panic, method not found of either type
 	return ""
-}
-
-func Compose[T any](interaction ActiveInteraction[T]) (T, InteractionError) {
-	result, error := Execute[T](interaction)
-	return result, error
-}
-
-func Execute[T any](interaction ActiveInteraction[T]) (T, InteractionError) {
-	var validate *validator.Validate = validator.New()
-	var ptr reflect.Value
-	var value reflect.Value
-
-	ptr = reflect.New(reflect.TypeOf(interaction))
-	temp := ptr.Elem()
-	value = reflect.ValueOf(interaction)
-	temp.Set(value)
-
-	var t reflect.Type
-	if reflect.TypeOf(interaction).Kind() == reflect.Ptr {
-		t = reflect.TypeOf(interaction).Elem()
-	} else {
-		t = reflect.TypeOf(interaction)
-	}
-
-	f, _ := t.FieldByName("ValidateHooks")
-	if value, ok := f.Tag.Lookup("before"); ok {
-		for _, s := range strings.Split(value, "|") {
-			CallMethod(interaction, s)
-		}
-	}
-
-	err := validate.Struct(interaction)
-	if err != nil {
-		var result T
-		interactionError := interaction.AddValidatorError(err)
-		return result, interactionError
-	}
-
-	if value, ok := f.Tag.Lookup("after"); ok {
-		for _, s := range strings.Split(value, "|") {
-			CallMethod(interaction, s)
-		}
-	}
-
-	beforeExecuteHook, _ := t.FieldByName("ExecuteHooks")
-	if value, ok := beforeExecuteHook.Tag.Lookup("before"); ok {
-		for _, s := range strings.Split(value, "|") {
-			CallMethod(interaction, s)
-		}
-	}
-
-	val := interaction.Run()
-
-	afterExecuteHook, _ := t.FieldByName("ExecuteHooks")
-	if value, ok := afterExecuteHook.Tag.Lookup("after"); ok {
-		for _, s := range strings.Split(value, "|") {
-			CallMethod(interaction, s)
-		}
-	}
-
-	return val, interaction.GetError()
 }

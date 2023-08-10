@@ -67,7 +67,7 @@ func TestBeforeValidateHook(t *testing.T) {
 
 type SubjectMultipleBeforeValidate struct {
 	A             int `validate:"gte=4"`
-	ValidateHooks `before:"SetA|SetB"`
+	ValidateHooks `before:"SetA|SecondHook"`
 	InteractionUtils
 }
 
@@ -75,7 +75,7 @@ func (s *SubjectMultipleBeforeValidate) SetA() {
 	s.A += 4
 }
 
-func (s *SubjectMultipleBeforeValidate) SetB() {
+func (s *SubjectMultipleBeforeValidate) SecondHook() {
 	s.A += 4
 }
 
@@ -200,49 +200,4 @@ func TestAfterExecuteHookIsCalled(t *testing.T) {
 	value, _ := Execute[int](&SubjectAfterExecute{A: 2, mock: testObj})
 	testObj.AssertExpectations(t)
 	assert.Equal(t, 2, value)
-}
-
-type SubjectComposedInteraction struct {
-	InteractionUtils
-}
-
-func (s SubjectComposedInteraction) Run() int {
-	val, _ := Compose[int](&AnotherInteraction{})
-	return val
-}
-
-type AnotherInteraction struct {
-	InteractionUtils
-}
-
-func (s AnotherInteraction) Run() int {
-	return 4
-}
-
-func TestComposedExecute(t *testing.T) {
-	value, _ := Execute[int](&SubjectComposedInteraction{})
-	assert.Equal(t, 4, value)
-}
-
-type SubjectComposedInteractionWithError struct {
-	InteractionUtils
-}
-
-func (s SubjectComposedInteractionWithError) Run() int {
-	val, _ := Compose[int](&AnotherInteractionWithError{})
-	return val
-}
-
-type AnotherInteractionWithError struct {
-	A int `validate:"gte=4"`
-	InteractionUtils
-}
-
-func (s AnotherInteractionWithError) Run() int {
-	return 4
-}
-
-func TestComposedExecuteWithError(t *testing.T) {
-	_, error := Execute[int](&SubjectComposedInteractionWithError{})
-	assert.NotNil(t, error)
 }
