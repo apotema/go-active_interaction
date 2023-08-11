@@ -1,7 +1,7 @@
  # [Go Active Interation][]
 ================================
 
-Go ActiveInteractation is based on [active_interaction](https://github.com/AaronLasseigne/) active_interaction and aims to bring the power of the Ruby gem to the Go space.
+Go ActiveInteractation is based on [activeinteraction][] active_interaction and aims to bring the power of the Ruby gem to the Go space.
 
 
 - [Installation](#installation)
@@ -10,7 +10,7 @@ Go ActiveInteractation is based on [active_interaction](https://github.com/Aaron
 - [Advanced usage](#advanced-usage)
   - [Callbacks](#callbacks)
   - [Composition](#composition)
-  - [Defaults - Not implemente yet]
+  - Defaults - Not implemented yet
   - [Errors](#errors)
 - [Credits](#credits)
 
@@ -20,11 +20,27 @@ Go ActiveInteractation is based on [active_interaction](https://github.com/Aaron
 
 ## Installation
 
-  go get github.com/apotema/go-activeinteraction
+Run the following Go command to install the gin package:
+
+``` sh
+go get github.com/apotema/go-activeinteraction
+```
 
 ## Basic usage
-f
 
+First you need to import Go Active Interaction package for using Go Active Interaction, one simplest example likes the follow example.go:
+
+```go
+package main
+
+import (
+  "github.com/apotema/go-active-interaction"
+)
+
+func main() {
+
+}
+```
 
 ### Validations
 
@@ -33,7 +49,7 @@ f
 ## Credits
 
 ActiveInteraction is brought to you by [Alexandre Mondaini Calvão][].
-Special thanks to [Aaron Lasseigne] for creating the [ActiveInteraction][] gem.
+Special thanks to [Aaron Lasseigne][] for creating the [ActiveInteraction][] gem.
 
 
 If you want to contribute to ActiveInteraction, please read
@@ -42,7 +58,14 @@ available on GitHub.
 
 ActiveInteraction is licensed under [the MIT License][].
 
-[Validator]: https://github.com/go-playground/validator
-[API Documentation]:
-[ActiveInteraction]: https://github.com/AaronLasseigne/active_interaction
-[Alexandre Mondaini Calvão]: https://github.com/apotema
+[go active interaction]: https://github.com/apotema/go-active-interaction
+[activeinteraction]: https://github.com/AaronLasseigne/active_interaction
+[API Documentation]: https://google.com
+[alexandre mondaini calvão]: https://github.com/apotema
+[aaron lasseigne]: https://github.com/AaronLasseigne
+[our contribution guidelines]: CONTRIBUTING.md
+[complete list of contributors]: https://google.com
+[the MIT License]: LICENSE.md
+
+<!-- ?? -->
+[validator]: https://github.com/go-playground/validator
