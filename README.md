@@ -1,4 +1,4 @@
- # [Go Active Interation][]
+ # [Go Active Interaction][]
 ================================
 
 Go ActiveInteractation is based on [activeinteraction][] active_interaction and aims to bring the power of the Ruby gem to the Go space.
@@ -34,13 +34,27 @@ First you need to import Go Active Interaction package for using Go Active Inter
 package main
 
 import (
-  "github.com/apotema/go-active-interaction"
+	"fmt"
+
+	. "github.com/apotema/go-active_interaction/active_interaction"
 )
 
-func main() {
+type DoubleA struct {
+	A int
+	InteractionUtils
+}
 
+func (s DoubleA) Run() int {
+	return s.A * 2
+}
+
+func main() {
+	value, _ := Execute[int](&DoubleA{A: 2})
+	fmt.Println(value)
 }
 ```
+
+For each the output would be 4.
 
 ### Validations
 
