@@ -3,7 +3,8 @@ package active_interaction_test
 import (
 	"testing"
 
-	. "github.com/apotema/go-active_interaction/active_interaction"
+	. "github.com/apotema/go-active_interaction"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

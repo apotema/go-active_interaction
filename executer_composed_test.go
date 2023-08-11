@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/apotema/go-active_interaction/active_interaction"
+	. "github.com/apotema/go-active_interaction"
+
 	"github.com/stretchr/testify/assert"
 )
 
