@@ -1,7 +1,6 @@
 package active_interaction_test
 
 import (
-	"fmt"
 	"testing"
 
 	. "github.com/apotema/go-active_interaction"
@@ -41,8 +40,7 @@ type AnotherInteractionWithError struct {
 }
 
 func (s *SubjectComposedInteractionMain) Run() int {
-	val, ee := Compose[int, int](s, &AnotherInteractionWithError{})
-	fmt.Println("error inside compose test", ee)
+	val, _ := Compose[int, int](s, &AnotherInteractionWithError{})
 	return val
 }
 

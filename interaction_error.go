@@ -46,20 +46,13 @@ func (m *InteractionError) AddValidatorError(errors error) InteractionError {
 		matches := fieldRegex.FindStringSubmatch(element)
 		if len(matches) > 1 {
 			field = matches[1]
-		} else {
-			fmt.Println("Field pattern not found")
-			continue
 		}
 
 		descriptions := descriptionRegex.FindStringSubmatch(element)
 		if len(descriptions) > 1 {
 			description = descriptions[1]
-		} else {
-			fmt.Println("Description pattern not found")
-			continue
 		}
 
-		fmt.Println("description: " + description)
 		m.AddError(field, description)
 	}
 
