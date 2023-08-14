@@ -1,7 +1,7 @@
  # [Go Active Interaction][]
 ================================
 
-Go ActiveInteractation is based on [activeinteraction][] active_interaction and aims to bring the power of the Ruby gem to the Go space.
+Go ActiveInteractation is based on [activeinteraction][] and aims to bring the power of the Ruby gem to the Go space.
 
 
 - [Installation](#installation)
@@ -23,7 +23,7 @@ Go ActiveInteractation is based on [activeinteraction][] active_interaction and 
 Run the following Go command to install the gin package:
 
 ``` sh
-go get github.com/apotema/go-activeinteraction
+go get github.com/apotema/go-active_interaction
 ```
 
 ## Basic usage
